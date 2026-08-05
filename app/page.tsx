@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { useSession, signOut } from "@/lib/auth-client";
 
 /* ─── Nav ─────────────────────────────────────────────────── */
@@ -299,8 +300,7 @@ function HowItWorks() {
         </p>
       </div>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: "1rem", position: "relative" }}>
-        <div style={{ position: "absolute", left: "2.5rem", top: "3rem", bottom: "3rem", width: "2px", background: "linear-gradient(to bottom, var(--violet), var(--cyan), var(--pink))", opacity: 0.4 }} />
+      <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem", position: "relative" }}>
         {STEPS.map((s) => (
           <div key={s.num} className="glass" style={{ padding: "1.5rem 1.5rem 1.5rem 1.75rem", display: "flex", gap: "1.25rem", alignItems: "flex-start" }}>
             <div style={{ minWidth: 52, height: 52, borderRadius: "14px", background: "linear-gradient(135deg, rgba(108,58,232,0.3), rgba(0,212,255,0.2))", border: "1px solid var(--border)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.4rem", position: "relative", zIndex: 1 }}>
