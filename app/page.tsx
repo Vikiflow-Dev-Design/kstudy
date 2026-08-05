@@ -65,6 +65,7 @@ function Navbar({ session }: { session: any }) {
           <a href="#pricing" style={{ color: "var(--text-secondary)", textDecoration: "none", fontSize: "0.875rem", fontWeight: 500 }}>Pricing</a>
           {isLoggedIn ? (
             <>
+              <Link href="/dashboard" style={{ color: "var(--text-secondary)", textDecoration: "none", fontSize: "0.875rem", fontWeight: 500 }} onMouseEnter={(e) => e.currentTarget.style.color = "var(--text-primary)"} onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-secondary)"}>Profile</Link>
               <Link href="/setup" style={{ color: "var(--cyan)", textDecoration: "none", fontSize: "0.875rem", fontWeight: 600 }}>Setup Guide</Link>
               <button
                 onClick={async () => {
@@ -147,6 +148,7 @@ function Navbar({ session }: { session: any }) {
             <a href="#pricing" onClick={() => setIsOpen(false)} style={{ color: "var(--text-primary)", textDecoration: "none", fontSize: "0.95rem", fontWeight: 500 }}>Pricing</a>
             {isLoggedIn ? (
               <>
+                <Link href="/dashboard" onClick={() => setIsOpen(false)} style={{ color: "var(--text-primary)", textDecoration: "none", fontSize: "0.95rem", fontWeight: 500 }}>Profile</Link>
                 <Link href="/setup" onClick={() => setIsOpen(false)} style={{ color: "var(--cyan)", textDecoration: "none", fontSize: "0.95rem", fontWeight: 600 }}>Setup Guide</Link>
                 <button
                   onClick={async () => {
