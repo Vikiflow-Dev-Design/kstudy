@@ -464,9 +464,8 @@ function PaymentModal({ onClose, session }: { onClose: () => void; session: any 
             <div style={{ fontSize: "4rem", marginBottom: "1rem" }}>🎉</div>
             <h3 style={{ fontSize: "1.5rem", fontWeight: 800, marginBottom: "0.75rem" }}>Payment Successful!</h3>
             <p style={{ color: "var(--text-secondary)", fontSize: "0.9rem", lineHeight: 1.6, marginBottom: "2rem" }}>
-              Your access code has been sent to{" "}
-              <strong style={{ color: "var(--text-primary)" }}>{email}</strong>.<br />
-              Follow the setup guide to connect your Telegram agent.
+              Your KStudy subscription is now active!<br />
+              Follow our easy setup guide to connect your Telegram bot.
             </p>
             <Link href="/setup" className="btn-primary" style={{ justifyContent: "center", display: "inline-flex", padding: "0.9rem 2rem", textDecoration: "none" }}>
               View Setup Guide →
