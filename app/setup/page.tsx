@@ -136,6 +136,7 @@ function Topbar({ userName }: { userName?: string }) {
           >
             <Link href="/" onClick={() => setIsOpen(false)} style={{ color: "var(--text-primary)", textDecoration: "none", fontSize: "0.95rem", fontWeight: 500 }}>Home</Link>
             <Link href="/dashboard" onClick={() => setIsOpen(false)} style={{ color: "var(--text-primary)", textDecoration: "none", fontSize: "0.95rem", fontWeight: 500 }}>Profile</Link>
+            <Link href="/setup" onClick={() => setIsOpen(false)} style={{ color: "var(--cyan)", textDecoration: "none", fontSize: "0.95rem", fontWeight: 600 }}>Setup Guide</Link>
             <button
               onClick={handleSignOut}
               style={{
