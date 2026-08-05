@@ -123,7 +123,7 @@ function Navbar({ session }: { session: any }) {
         {/* Mobile dropdown drawer menu */}
         {isOpen && (
           <div
-            className="glass mobile-drawer"
+            className="mobile-drawer"
             style={{
               position: "absolute",
               top: "100%",
@@ -136,7 +136,10 @@ function Navbar({ session }: { session: any }) {
               zIndex: 100,
               marginTop: "0.5rem",
               borderRadius: "1.25rem",
-              boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
+              background: "rgba(9, 13, 24, 0.98)",
+              border: "1px solid var(--border)",
+              backdropFilter: "blur(20px)",
+              boxShadow: "0 10px 35px rgba(0,0,0,0.6)",
               animation: "slide-down 0.25s ease-out forwards",
             }}
           >
