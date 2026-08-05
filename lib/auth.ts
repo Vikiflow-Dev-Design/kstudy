@@ -19,10 +19,10 @@ export async function getAuth(): Promise<ReturnType<typeof betterAuth>> {
     // ── Database ──────────────────────────────────────────────
     database: mongodbAdapter(db, {
       collectionNames: {
-        user:         "users",
-        session:      "sessions",
-        account:      "accounts",
-        verification: "verifications",
+        user:         "user",
+        session:      "session",
+        account:      "account",
+        verification: "verification",
       },
     }),
 

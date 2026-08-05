@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
       const db     = client.db("kstudy");
 
       // Update user subscription status
-      await db.collection("users").updateOne(
+      await db.collection("user").updateOne(
         { email },
         {
           $set: {
