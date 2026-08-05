@@ -403,7 +403,7 @@ function PaymentModal({ onClose, session }: { onClose: () => void; session: any 
             <div style={{ marginBottom: "1.75rem" }}>
               <div className="badge badge-violet" style={{ marginBottom: "0.75rem" }}>🔒 Secure Checkout via Paystack</div>
               <h3 style={{ fontSize: "1.4rem", fontWeight: 800, marginBottom: "0.3rem" }}>KStudy Student Plan</h3>
-              <p style={{ color: "var(--text-secondary)", fontSize: "0.875rem" }}>₦2,000 / month • Cancel anytime</p>
+              <p style={{ color: "var(--text-secondary)", fontSize: "0.875rem" }}>₦2,000 / month</p>
             </div>
 
             <div style={{ background: "rgba(108,58,232,0.08)", border: "1px solid rgba(108,58,232,0.2)", borderRadius: "0.9rem", padding: "1rem", marginBottom: "1.5rem" }}>
@@ -456,7 +456,7 @@ function PaymentModal({ onClose, session }: { onClose: () => void; session: any 
               ) : "🔒 Pay ₦2,000 with Paystack →"}
             </button>
             <p style={{ textAlign: "center", marginTop: "0.75rem", fontSize: "0.75rem", color: "var(--text-muted)" }}>
-              🔒 Secured by Paystack • Cancel anytime
+              🔒 Secured by Paystack
             </p>
           </>
         ) : (
@@ -537,52 +537,14 @@ function Pricing({ onPay, session }: { onPay: () => void; session: any }) {
           </Link>
         )}
         <p style={{ marginTop: "1rem", fontSize: "0.78rem", color: "var(--text-muted)" }}>
-          Secure payment via Paystack • Cancel anytime
+          Secure payment via Paystack
         </p>
       </div>
     </section>
   );
 }
 
-/* ─── FAQ ──────────────────────────────────────────────────── */
-const FAQS = [
-  { q: "Do I need to install anything?", a: "No! KStudy runs entirely through Telegram. Just subscribe, follow the setup guide, and start chatting with your AI agent." },
-  { q: "What is Hermes AI?", a: "Hermes is a powerful, self-hosted AI language model. We run it on our own servers so your conversations stay private and fast." },
-  { q: "Can I cancel anytime?", a: "Absolutely. Cancel with one click from your account dashboard. You'll keep access until the end of your billing period." },
-  { q: "Is my data private?", a: "Yes. Your conversations are processed on our private Hermes server and are never shared or sold to third parties." },
-  { q: "What payment methods are supported?", a: "We use Paystack, which supports debit cards, credit cards, bank transfers, and USSD for Nigerian users." },
-];
-
-function FAQ() {
-  const [open, setOpen] = useState<number | null>(null);
-  return (
-    <section className="section" style={{ maxWidth: 680, margin: "0 auto" }}>
-      <div style={{ textAlign: "center", marginBottom: "2.5rem" }}>
-        <h2 style={{ fontSize: "clamp(1.6rem, 4vw, 2.4rem)", fontWeight: 800 }}>
-          Got Questions? <span className="gradient-text">We've Got Answers.</span>
-        </h2>
-      </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-        {FAQS.map((f, i) => (
-          <div key={i} className="glass" style={{ overflow: "hidden" }}>
-            <button
-              onClick={() => setOpen(open === i ? null : i)}
-              style={{ width: "100%", textAlign: "left", background: "none", border: "none", padding: "1.1rem 1.25rem", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center", gap: "1rem", color: "var(--text-primary)", fontFamily: "inherit", fontWeight: 600, fontSize: "0.93rem" }}
-            >
-              {f.q}
-              <span style={{ color: "var(--violet-light)", fontSize: "1.2rem", transition: "transform 0.2s", transform: open === i ? "rotate(45deg)" : "rotate(0deg)", display: "inline-block", minWidth: 20 }}>+</span>
-            </button>
-            {open === i && (
-              <div style={{ padding: "0 1.25rem 1.1rem", color: "var(--text-secondary)", fontSize: "0.875rem", lineHeight: 1.7, borderTop: "1px solid var(--border)" }}>
-                <br />{f.a}
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
+// FAQ Section Removed
 
 /* ─── CTA Bottom ────────────────────────────────────────────── */
 function CTABottom({ onPay, session }: { onPay: () => void; session: any }) {
@@ -655,7 +617,6 @@ export default function HomePage() {
         <Hero onPay={openModal} session={session} />
         <HowItWorks />
         <Pricing onPay={openModal} session={session} />
-        <FAQ />
         <CTABottom onPay={openModal} session={session} />
       </main>
       <Footer />

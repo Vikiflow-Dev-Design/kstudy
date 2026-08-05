@@ -279,12 +279,9 @@ export default function DashboardPage() {
                     Your subscription is active and renews monthly. Enjoy unlimited access to Hermes AI on Telegram!
                   </p>
                   <div style={{ display: "flex", gap: "0.75rem" }}>
-                    <Link href="/setup" className="btn-primary" style={{ padding: "0.55rem 1rem", fontSize: "0.82rem", textDecoration: "none", flex: 1, justifyContent: "center" }}>
-                      ⚙️ Setup Bot
+                    <Link href="/setup" className="btn-primary" style={{ width: "100%", justifyContent: "center", padding: "0.6rem 1rem", fontSize: "0.85rem", textDecoration: "none" }}>
+                      ⚙️ Setup Telegram Bot →
                     </Link>
-                    <button style={{ background: "none", border: "1px solid var(--border)", borderRadius: "9999px", padding: "0.55rem 1rem", fontSize: "0.82rem", color: "#f87171", cursor: "pointer", flex: 1 }} onClick={() => alert("To cancel your subscription, please message support at support@kstudy.app or contact us on @KStudySupport")}>
-                      Cancel Plan
-                    </button>
                   </div>
                 </div>
               ) : (
