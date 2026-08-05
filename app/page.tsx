@@ -2,9 +2,12 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useSession, signOut } from "@/lib/auth-client";
 
 /* ─── Nav ─────────────────────────────────────────────────── */
-function Navbar() {
+function Navbar({ session }: { session: any }) {
+  const isLoggedIn = !!session?.user;
+
   return (
     <nav>
       <Link href="/" style={{ display: "flex", alignItems: "center", gap: "0.6rem", textDecoration: "none" }}>
@@ -19,15 +22,42 @@ function Navbar() {
       <div style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
         <a href="#how-it-works" style={{ color: "var(--text-secondary)", textDecoration: "none", fontSize: "0.875rem", fontWeight: 500 }}>How It Works</a>
         <a href="#pricing" style={{ color: "var(--text-secondary)", textDecoration: "none", fontSize: "0.875rem", fontWeight: 500 }}>Pricing</a>
-        <Link href="/sign-in" style={{ color: "var(--text-secondary)", textDecoration: "none", fontSize: "0.875rem", fontWeight: 500 }}>Sign In</Link>
-        <Link href="/sign-up" className="btn-primary" style={{ padding: "0.5rem 1.1rem", fontSize: "0.83rem" }}>Get Started</Link>
+        {isLoggedIn ? (
+          <>
+            <Link href="/setup" style={{ color: "var(--cyan)", textDecoration: "none", fontSize: "0.875rem", fontWeight: 600 }}>Setup Guide</Link>
+            <button
+              onClick={async () => {
+                await signOut();
+                window.location.reload();
+              }}
+              style={{
+                background: "none", border: "1px solid var(--border)", borderRadius: "0.6rem",
+                padding: "0.4rem 0.85rem", color: "var(--text-muted)",
+                fontSize: "0.8rem", cursor: "pointer", fontFamily: "inherit",
+                transition: "border-color 0.2s, color 0.2s",
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.borderColor = "var(--violet-light)"; e.currentTarget.style.color = "var(--text-primary)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.color = "var(--text-muted)"; }}
+            >
+              Sign Out
+            </button>
+          </>
+        ) : (
+          <>
+            <Link href="/sign-in" style={{ color: "var(--text-secondary)", textDecoration: "none", fontSize: "0.875rem", fontWeight: 500 }}>Sign In</Link>
+            <Link href="/sign-up" className="btn-primary" style={{ padding: "0.5rem 1.1rem", fontSize: "0.83rem" }}>Get Started</Link>
+          </>
+        )}
       </div>
     </nav>
   );
 }
 
 /* ─── Hero ─────────────────────────────────────────────────── */
-function Hero({ onPay }: { onPay: () => void }) {
+function Hero({ onPay, session }: { onPay: () => void; session: any }) {
+  const isLoggedIn = !!session?.user;
+  const isSubscribed = session?.user?.subscriptionActive;
+
   return (
     <section style={{
       position: "relative", minHeight: "100vh",
@@ -55,9 +85,19 @@ function Hero({ onPay }: { onPay: () => void }) {
         </p>
 
         <div className="fade-up fade-up-d4" style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
-          <button onClick={onPay} className="btn-primary" style={{ fontSize: "1rem", padding: "0.9rem 2.2rem" }}>
-            Subscribe Now — ₦2,000/mo →
-          </button>
+          {isSubscribed ? (
+            <Link href="/setup" className="btn-primary" style={{ fontSize: "1rem", padding: "0.9rem 2.2rem" }}>
+              Go to Setup Guide →
+            </Link>
+          ) : isLoggedIn ? (
+            <button onClick={onPay} className="btn-primary" style={{ fontSize: "1rem", padding: "0.9rem 2.2rem" }}>
+              Subscribe Now — ₦2,000/mo →
+            </button>
+          ) : (
+            <Link href="/sign-up?redirect=%2F" className="btn-primary" style={{ fontSize: "1rem", padding: "0.9rem 2.2rem", textDecoration: "none" }}>
+              Get Started Free →
+            </Link>
+          )}
           <a href="#how-it-works" className="btn-outline" style={{ fontSize: "1rem", padding: "0.9rem 2.2rem" }}>
             See How It Works
           </a>
@@ -101,11 +141,31 @@ function Hero({ onPay }: { onPay: () => void }) {
 
 /* ─── How It Works ──────────────────────────────────────────── */
 const STEPS = [
-  { num: "01", icon: "💳", title: "Subscribe — ₦2,000", desc: "Click Subscribe below, enter your email, and pay securely via Paystack. Takes 30 seconds." },
-  { num: "02", icon: "📧", title: "Get Your Access Code", desc: "Instantly receive your unique KStudy access code via email after payment." },
-  { num: "03", icon: "✈️", title: "Open Telegram", desc: "Search for @KStudyAgent on Telegram or click the link we send you to open the bot directly." },
-  { num: "04", icon: "🔑", title: "Connect & Activate", desc: "Send your access code to the bot. It verifies your subscription and activates your Hermes AI agent." },
-  { num: "05", icon: "🚀", title: "Start Studying Smarter", desc: "Your AI agent is live! Ask it anything — assignments, essays, research, coding, scheduling — 24/7." },
+  {
+    num: "01", icon: "💳",
+    title: "Subscribe — ₦2,000",
+    desc: "Pay securely via Paystack. Enter your email and complete checkout in under 30 seconds.",
+  },
+  {
+    num: "02", icon: "🤖",
+    title: "Open BotFather on Telegram",
+    desc: "In Telegram, search for @BotFather (the official bot). Tap START or send /start to wake it up.",
+  },
+  {
+    num: "03", icon: "⚙️",
+    title: "Create Your Personal Bot",
+    desc: "Send /newbot to BotFather. Give your bot a name (e.g. \"My KStudy Agent\") and a username ending in _bot. BotFather will hand you a secret API token.",
+  },
+  {
+    num: "04", icon: "🔑",
+    title: "Submit Your Bot Token to KStudy",
+    desc: "Paste the token you received from BotFather into the setup page along with your KStudy access code. We connect Hermes AI to your personal bot instantly.",
+  },
+  {
+    num: "05", icon: "🚀",
+    title: "Chat with Your Own AI Agent",
+    desc: "Open the bot you just created in Telegram and start chatting! Your personal Hermes AI agent is ready — assignments, research, essays, coding, all 24/7.",
+  },
 ];
 
 function HowItWorks() {
@@ -116,8 +176,8 @@ function HowItWorks() {
         <h2 style={{ fontSize: "clamp(1.8rem, 4vw, 2.8rem)", fontWeight: 800, marginBottom: "1rem" }}>
           Up & Running in <span className="gradient-text">5 Minutes</span>
         </h2>
-        <p style={{ color: "var(--text-secondary)", maxWidth: 460, margin: "0 auto", fontSize: "1rem", lineHeight: 1.7 }}>
-          No technical setup needed. Just pay, connect on Telegram, and chat.
+        <p style={{ color: "var(--text-secondary)", maxWidth: 500, margin: "0 auto", fontSize: "1rem", lineHeight: 1.7 }}>
+          Create your own Telegram bot with BotFather, paste the token, and we plug Hermes AI straight in.
         </p>
       </div>
 
@@ -147,13 +207,12 @@ function HowItWorks() {
 }
 
 /* ─── Paystack Payment Modal ────────────────────────────────── */
-function PaymentModal({ onClose }: { onClose: () => void }) {
+function PaymentModal({ onClose, session }: { onClose: () => void; session: any }) {
   const [step, setStep]       = useState<"email" | "success">("email");
-  const [email, setEmail]     = useState("");
+  const [email, setEmail]     = useState(session?.user?.email ?? "");
   const [loading, setLoading] = useState(false);
   const [error, setError]     = useState("");
 
-  // ₦2,000 in kobo
   const AMOUNT_KOBO  = 200000;
   const PAYSTACK_KEY = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY ?? "";
 
@@ -206,6 +265,8 @@ function PaymentModal({ onClose }: { onClose: () => void }) {
     transition: "border-color 0.2s, box-shadow 0.2s",
   };
 
+  const isEmailPrefilled = !!session?.user?.email;
+
   return (
     <div
       style={{ position: "fixed", inset: 0, zIndex: 200, background: "rgba(7,11,20,0.88)", backdropFilter: "blur(8px)", display: "flex", alignItems: "center", justifyContent: "center", padding: "1rem" }}
@@ -238,17 +299,23 @@ function PaymentModal({ onClose }: { onClose: () => void }) {
 
             <div style={{ marginBottom: "1.25rem" }}>
               <label style={{ fontSize: "0.75rem", color: "var(--text-muted)", fontWeight: 600, display: "block", marginBottom: "0.4rem", letterSpacing: "0.05em" }}>YOUR EMAIL ADDRESS</label>
-              <input
-                id="paystack-email"
-                type="email"
-                placeholder="you@university.edu"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && openPaystack()}
-                style={inp}
-                onFocus={(e) => { e.target.style.borderColor = "var(--violet-light)"; e.target.style.boxShadow = "0 0 0 3px rgba(108,58,232,0.15)"; }}
-                onBlur={(e)  => { e.target.style.borderColor = "rgba(108,58,232,0.25)"; e.target.style.boxShadow = "none"; }}
-              />
+              {isEmailPrefilled ? (
+                <div style={{ ...inp, background: "rgba(255,255,255,0.02)", borderColor: "rgba(108,58,232,0.15)", color: "var(--text-secondary)" }}>
+                  {email} (Account Email)
+                </div>
+              ) : (
+                <input
+                  id="paystack-email"
+                  type="email"
+                  placeholder="you@university.edu"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && openPaystack()}
+                  style={inp}
+                  onFocus={(e) => { e.target.style.borderColor = "var(--violet-light)"; e.target.style.boxShadow = "0 0 0 3px rgba(108,58,232,0.15)"; }}
+                  onBlur={(e)  => { e.target.style.borderColor = "rgba(108,58,232,0.25)"; e.target.style.boxShadow = "none"; }}
+                />
+              )}
             </div>
 
             <button
@@ -289,7 +356,10 @@ function PaymentModal({ onClose }: { onClose: () => void }) {
 }
 
 /* ─── Pricing Section ───────────────────────────────────────── */
-function Pricing({ onPay }: { onPay: () => void }) {
+function Pricing({ onPay, session }: { onPay: () => void; session: any }) {
+  const isLoggedIn = !!session?.user;
+  const isSubscribed = session?.user?.subscriptionActive;
+
   return (
     <section id="pricing" className="section" style={{ maxWidth: 780, margin: "0 auto", textAlign: "center" }}>
       <div style={{ marginBottom: "3rem" }}>
@@ -330,9 +400,19 @@ function Pricing({ onPay }: { onPay: () => void }) {
           ))}
         </ul>
 
-        <button onClick={onPay} className="btn-primary" style={{ width: "100%", justifyContent: "center", padding: "1rem", fontSize: "1rem" }}>
-          🚀 Subscribe for ₦2,000/month
-        </button>
+        {isSubscribed ? (
+          <Link href="/setup" className="btn-primary" style={{ width: "100%", justifyContent: "center", padding: "1rem", fontSize: "1rem", textDecoration: "none" }}>
+            Active Subscription — Go to Setup →
+          </Link>
+        ) : isLoggedIn ? (
+          <button onClick={onPay} className="btn-primary" style={{ width: "100%", justifyContent: "center", padding: "1rem", fontSize: "1rem" }}>
+            🚀 Subscribe for ₦2,000/month
+          </button>
+        ) : (
+          <Link href="/sign-up?redirect=%2F#pricing" className="btn-primary" style={{ width: "100%", justifyContent: "center", padding: "1rem", fontSize: "1rem", textDecoration: "none" }}>
+            Sign Up to Subscribe
+          </Link>
+        )}
         <p style={{ marginTop: "1rem", fontSize: "0.78rem", color: "var(--text-muted)" }}>
           Secure payment via Paystack • Cancel anytime
         </p>
@@ -382,7 +462,10 @@ function FAQ() {
 }
 
 /* ─── CTA Bottom ────────────────────────────────────────────── */
-function CTABottom({ onPay }: { onPay: () => void }) {
+function CTABottom({ onPay, session }: { onPay: () => void; session: any }) {
+  const isLoggedIn = !!session?.user;
+  const isSubscribed = session?.user?.subscriptionActive;
+
   return (
     <section className="section" style={{ maxWidth: 760, margin: "0 auto", textAlign: "center" }}>
       <div className="glass glow-violet" style={{ padding: "3.5rem 2rem", position: "relative", overflow: "hidden" }}>
@@ -395,9 +478,20 @@ function CTABottom({ onPay }: { onPay: () => void }) {
           <p style={{ color: "var(--text-secondary)", marginBottom: "2rem", maxWidth: 420, margin: "0 auto 2rem" }}>
             Subscribe and your AI study agent will be waiting in your Telegram inbox.
           </p>
-          <button onClick={onPay} className="btn-primary" style={{ fontSize: "1rem", padding: "0.9rem 2.5rem" }}>
-            🚀 Subscribe — ₦2,000/mo
-          </button>
+
+          {isSubscribed ? (
+            <Link href="/setup" className="btn-primary" style={{ fontSize: "1rem", padding: "0.9rem 2.5rem", textDecoration: "none" }}>
+              Active Subscription — Go to Setup Guide
+            </Link>
+          ) : isLoggedIn ? (
+            <button onClick={onPay} className="btn-primary" style={{ fontSize: "1rem", padding: "0.9rem 2.5rem" }}>
+              🚀 Subscribe — ₦2,000/mo
+            </button>
+          ) : (
+            <Link href="/sign-up" className="btn-primary" style={{ fontSize: "1rem", padding: "0.9rem 2.5rem", textDecoration: "none" }}>
+              🚀 Sign Up to Get Started
+            </Link>
+          )}
         </div>
       </div>
     </section>
@@ -424,21 +518,22 @@ function Footer() {
 
 /* ─── Page ──────────────────────────────────────────────────── */
 export default function HomePage() {
+  const { data: session } = useSession();
   const [showModal, setShowModal] = useState(false);
   const openModal = () => setShowModal(true);
 
   return (
     <>
-      {showModal && <PaymentModal onClose={() => setShowModal(false)} />}
+      {showModal && <PaymentModal onClose={() => setShowModal(false)} session={session} />}
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
 
-      <Navbar />
+      <Navbar session={session} />
       <main>
-        <Hero onPay={openModal} />
+        <Hero onPay={openModal} session={session} />
         <HowItWorks />
-        <Pricing onPay={openModal} />
+        <Pricing onPay={openModal} session={session} />
         <FAQ />
-        <CTABottom onPay={openModal} />
+        <CTABottom onPay={openModal} session={session} />
       </main>
       <Footer />
     </>
