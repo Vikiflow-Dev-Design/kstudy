@@ -1,55 +1,173 @@
 "use client";
 
-import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSession, signOut } from "@/lib/auth-client";
 
 /* ─── Nav ─────────────────────────────────────────────────── */
 function Navbar({ session }: { session: any }) {
   const isLoggedIn = !!session?.user;
+  const [isOpen, setIsOpen] = useState(false);
+  const [visible, setVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
+  // Smart Navigation: Hide on scroll down, show on scroll up
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      if (currentScrollY > lastScrollY && currentScrollY > 80) {
+        setVisible(false); // scrolling down
+        setIsOpen(false);   // close menu drawer
+      } else {
+        setVisible(true);  // scrolling up
+      }
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [lastScrollY]);
 
   return (
-    <nav>
-      <Link href="/" style={{ display: "flex", alignItems: "center", gap: "0.6rem", textDecoration: "none" }}>
-        <div style={{
-          width: 36, height: 36, borderRadius: "10px",
-          background: "linear-gradient(135deg, #6C3AE8 0%, #00D4FF 100%)",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: "1.1rem", fontWeight: 700, color: "#fff",
-        }}>K</div>
-        <span style={{ fontWeight: 700, fontSize: "1.15rem", color: "var(--text-primary)" }}>KStudy</span>
-      </Link>
-      <div className="nav-right">
-        <a href="#how-it-works" style={{ color: "var(--text-secondary)", textDecoration: "none", fontSize: "0.875rem", fontWeight: 500 }}>How It Works</a>
-        <a href="#pricing" style={{ color: "var(--text-secondary)", textDecoration: "none", fontSize: "0.875rem", fontWeight: 500 }}>Pricing</a>
-        {isLoggedIn ? (
-          <>
-            <Link href="/setup" style={{ color: "var(--cyan)", textDecoration: "none", fontSize: "0.875rem", fontWeight: 600 }}>Setup Guide</Link>
-            <button
-              onClick={async () => {
-                await signOut();
-                window.location.reload();
-              }}
-              style={{
-                background: "none", border: "1px solid var(--border)", borderRadius: "0.6rem",
-                padding: "0.4rem 0.85rem", color: "var(--text-muted)",
-                fontSize: "0.8rem", cursor: "pointer", fontFamily: "inherit",
-                transition: "border-color 0.2s, color 0.2s",
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.borderColor = "var(--violet-light)"; e.currentTarget.style.color = "var(--text-primary)"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.color = "var(--text-muted)"; }}
-            >
-              Sign Out
-            </button>
-          </>
-        ) : (
-          <>
-            <Link href="/sign-in" style={{ color: "var(--text-secondary)", textDecoration: "none", fontSize: "0.875rem", fontWeight: 500 }}>Sign In</Link>
-            <Link href="/sign-up" className="btn-primary" style={{ padding: "0.5rem 1.1rem", fontSize: "0.83rem" }}>Get Started</Link>
-          </>
+    <>
+      {/* Click outside detection backdrop */}
+      {isOpen && (
+        <div
+          onClick={() => setIsOpen(false)}
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 90,
+            background: "rgba(0,0,0,0.1)",
+          }}
+        />
+      )}
+
+      <nav
+        style={{
+          transform: visible ? "translateY(0)" : "translateY(-100%)",
+          transition: "transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s",
+        }}
+      >
+        <Link href="/" style={{ display: "flex", alignItems: "center", gap: "0.6rem", textDecoration: "none" }}>
+          <div style={{
+            width: 36, height: 36, borderRadius: "10px",
+            background: "linear-gradient(135deg, #6C3AE8 0%, #00D4FF 100%)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: "1.1rem", fontWeight: 700, color: "#fff",
+          }}>K</div>
+          <span style={{ fontWeight: 700, fontSize: "1.15rem", color: "var(--text-primary)" }}>KStudy</span>
+        </Link>
+
+        {/* Desktop links */}
+        <div className="nav-right">
+          <a href="#how-it-works" style={{ color: "var(--text-secondary)", textDecoration: "none", fontSize: "0.875rem", fontWeight: 500 }}>How It Works</a>
+          <a href="#pricing" style={{ color: "var(--text-secondary)", textDecoration: "none", fontSize: "0.875rem", fontWeight: 500 }}>Pricing</a>
+          {isLoggedIn ? (
+            <>
+              <Link href="/setup" style={{ color: "var(--cyan)", textDecoration: "none", fontSize: "0.875rem", fontWeight: 600 }}>Setup Guide</Link>
+              <button
+                onClick={async () => {
+                  await signOut();
+                  window.location.reload();
+                }}
+                style={{
+                  background: "none", border: "1px solid var(--border)", borderRadius: "0.6rem",
+                  padding: "0.4rem 0.85rem", color: "var(--text-muted)",
+                  fontSize: "0.8rem", cursor: "pointer", fontFamily: "inherit",
+                  transition: "border-color 0.2s, color 0.2s",
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.borderColor = "var(--violet-light)"; e.currentTarget.style.color = "var(--text-primary)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.color = "var(--text-muted)"; }}
+              >
+                Sign Out
+              </button>
+            </>
+          ) : (
+            <>
+              <Link href="/sign-in" style={{ color: "var(--text-secondary)", textDecoration: "none", fontSize: "0.875rem", fontWeight: 500 }}>Sign In</Link>
+              <Link href="/sign-up" className="btn-primary" style={{ padding: "0.5rem 1.1rem", fontSize: "0.83rem" }}>Get Started</Link>
+            </>
+          )}
+        </div>
+
+        {/* Mobile Hamburger Button */}
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          style={{
+            display: "none",
+            background: "none",
+            border: "none",
+            color: "var(--text-primary)",
+            cursor: "pointer",
+            padding: "0.25rem",
+          }}
+          className="hamburger-btn"
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            {isOpen ? (
+              <>
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </>
+            ) : (
+              <>
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <line x1="3" y1="18" x2="21" y2="18" />
+              </>
+            )}
+          </svg>
+        </button>
+
+        {/* Mobile dropdown drawer menu */}
+        {isOpen && (
+          <div
+            className="glass mobile-drawer"
+            style={{
+              position: "absolute",
+              top: "100%",
+              left: 0,
+              right: 0,
+              padding: "1.5rem",
+              display: "flex",
+              flexDirection: "column",
+              gap: "1.25rem",
+              zIndex: 100,
+              marginTop: "0.5rem",
+              borderRadius: "1.25rem",
+              boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
+              animation: "slide-down 0.25s ease-out forwards",
+            }}
+          >
+            <a href="#how-it-works" onClick={() => setIsOpen(false)} style={{ color: "var(--text-primary)", textDecoration: "none", fontSize: "0.95rem", fontWeight: 500 }}>How It Works</a>
+            <a href="#pricing" onClick={() => setIsOpen(false)} style={{ color: "var(--text-primary)", textDecoration: "none", fontSize: "0.95rem", fontWeight: 500 }}>Pricing</a>
+            {isLoggedIn ? (
+              <>
+                <Link href="/setup" onClick={() => setIsOpen(false)} style={{ color: "var(--cyan)", textDecoration: "none", fontSize: "0.95rem", fontWeight: 600 }}>Setup Guide</Link>
+                <button
+                  onClick={async () => {
+                    await signOut();
+                    window.location.reload();
+                  }}
+                  style={{
+                    background: "none", border: "1px solid var(--border)", borderRadius: "0.75rem",
+                    padding: "0.6rem", color: "#f87171", width: "100%",
+                    fontSize: "0.9rem", cursor: "pointer", fontFamily: "inherit",
+                  }}
+                >
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              <>
+                <Link href="/sign-in" onClick={() => setIsOpen(false)} style={{ color: "var(--text-primary)", textDecoration: "none", fontSize: "0.95rem", fontWeight: 500 }}>Sign In</Link>
+                <Link href="/sign-up" onClick={() => setIsOpen(false)} className="btn-primary" style={{ justifyContent: "center", padding: "0.7rem", fontSize: "0.9rem" }}>Get Started</Link>
+              </>
+            )}
+          </div>
         )}
-      </div>
-    </nav>
+      </nav>
+    </>
   );
 }
 

@@ -343,10 +343,27 @@ nav {
   }
 }
 
-@media (max-width: 620px) {
-  .nav-right a:not(.btn-primary),
-  .nav-right span {
-    display: none; /* Hide secondary nav links on mobile to prevent overlapping */
+.hamburger-btn {
+  display: none !important;
+}
+
+@media (max-width: 768px) {
+  .hamburger-btn {
+    display: block !important;
+  }
+  .nav-right {
+    display: none !important;
+  }
+}
+
+@keyframes slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
