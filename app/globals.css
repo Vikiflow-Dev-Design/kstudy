@@ -312,3 +312,41 @@ nav {
   nav { padding: 0.75rem 1rem; }
   .section { padding: 4rem 1rem; }
 }
+
+/* ── Responsive Additions ── */
+.responsive-setup-grid {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.responsive-dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .responsive-setup-grid {
+    grid-template-columns: 1fr;
+  }
+  .responsive-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 620px) {
+  .nav-right a:not(.btn-primary),
+  .nav-right span {
+    display: none; /* Hide secondary nav links on mobile to prevent overlapping */
+  }
+}
+

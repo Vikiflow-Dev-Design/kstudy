@@ -19,7 +19,7 @@ function Navbar({ session }: { session: any }) {
         }}>K</div>
         <span style={{ fontWeight: 700, fontSize: "1.15rem", color: "var(--text-primary)" }}>KStudy</span>
       </Link>
-      <div style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
+      <div className="nav-right">
         <a href="#how-it-works" style={{ color: "var(--text-secondary)", textDecoration: "none", fontSize: "0.875rem", fontWeight: 500 }}>How It Works</a>
         <a href="#pricing" style={{ color: "var(--text-secondary)", textDecoration: "none", fontSize: "0.875rem", fontWeight: 500 }}>Pricing</a>
         {isLoggedIn ? (

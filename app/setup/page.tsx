@@ -373,7 +373,7 @@ export default function SetupPage() {
           </div>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "240px 1fr", gap: "1.5rem", alignItems: "start" }}>
+        <div className="responsive-setup-grid">
 
           {/* Sidebar nav */}
           <div className="glass" style={{ padding: "1rem", borderRadius: "1.25rem" }}>
