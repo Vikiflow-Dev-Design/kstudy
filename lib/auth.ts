@@ -52,6 +52,9 @@ export async function getAuth(): Promise<ReturnType<typeof betterAuth>> {
       additionalFields: {
         subscriptionPlan:   { type: "string",  default: "free"  },
         subscriptionActive: { type: "boolean", default: false   },
+        accessCode:         { type: "string",  required: false  },
+        telegramBotToken:   { type: "string",  required: false  },
+        telegramBotConnected:{ type: "boolean", default: false   },
       },
     },
   });

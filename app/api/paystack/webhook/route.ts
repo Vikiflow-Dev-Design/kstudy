@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import clientPromise from "@/lib/db";
+import { sendAccessCodeEmail } from "@/lib/mail";
 
 const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET_KEY!;
 
@@ -29,7 +30,15 @@ export async function POST(req: NextRequest) {
       const client = await clientPromise;
       const db     = client.db("kstudy");
 
-      // Update user subscription status
+      // Generate a unique 6-character alphanumeric code: e.g. KSTUDY-Z7B8P9
+      const randomPart = Math.random().toString(36).substring(2, 8).toUpperCase();
+      const accessCode = `KSTUDY-${randomPart}`;
+
+      // Get user name for personalization if user exists
+      const user = await db.collection("user").findOne({ email });
+      const userName = user?.name;
+
+      // Update user subscription status & assign access code
       await db.collection("user").updateOne(
         { email },
         {
@@ -40,6 +49,7 @@ export async function POST(req: NextRequest) {
             subscribedAt:       new Date(),
             // Amount is in kobo (NGN) — divide by 100
             amountPaid:         amount / 100,
+            accessCode:         accessCode,
           },
         }
       );
@@ -54,9 +64,13 @@ export async function POST(req: NextRequest) {
         status:    "success",
         createdAt: new Date(),
       });
+
+      // Send confirmation email containing the access code and setup steps
+      await sendAccessCodeEmail(email, accessCode, userName);
+
     } catch (err) {
-      console.error("Webhook DB error:", err);
-      return NextResponse.json({ error: "DB error" }, { status: 500 });
+      console.error("Webhook DB/Mail error:", err);
+      return NextResponse.json({ error: "Server error during webhook processing" }, { status: 500 });
     }
   }
 

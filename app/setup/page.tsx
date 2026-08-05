@@ -210,12 +210,32 @@ function TokenForm({ email }: { email?: string }) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!token.includes(":")) { setErrMsg("That doesn't look like a valid bot token. It should contain a colon (:)."); return; }
+    if (!token.includes(":")) {
+      setErrMsg("That doesn't look like a valid bot token. It should contain a colon (:).");
+      return;
+    }
     setStatus("loading");
     setErrMsg("");
-    // Simulate API call — replace with real endpoint when backend is ready
-    await new Promise((r) => setTimeout(r, 1800));
-    setStatus("done");
+    
+    try {
+      const res = await fetch("/api/hermes/connect", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token, code }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        setErrMsg(data.error || "Failed to connect bot.");
+        setStatus("error");
+      } else {
+        setStatus("done");
+      }
+    } catch (err) {
+      console.error(err);
+      setErrMsg("Network error connecting to Hermes. Please try again.");
+      setStatus("error");
+    }
   }
 
   if (status === "done") {
@@ -257,16 +277,13 @@ function TokenForm({ email }: { email?: string }) {
         />
       </div>
       <div>
-        <label style={{ fontSize: "0.73rem", color: "var(--text-muted)", fontWeight: 600, display: "block", marginBottom: "0.35rem", letterSpacing: "0.05em" }}>KSTUDY ACCESS CODE (from BotFather)</label>
-        <p style={{ fontSize: "0.75rem", color: "var(--text-secondary)", margin: "-0.2rem 0 0.4rem 0", lineHeight: 1.4 }}>
-          This is the secret string found on BotFather directly after the colon (:) of your Bot API Token.
-        </p>
+        <label style={{ fontSize: "0.73rem", color: "var(--text-muted)", fontWeight: 600, display: "block", marginBottom: "0.35rem", letterSpacing: "0.05em" }}>KSTUDY ACCESS CODE (from email)</label>
         <input
           required
-          placeholder="AAFxxxxxxxxxxxxxxxxxxxxxxxxxx"
+          placeholder="KSTUDY-XXXXXX"
           value={code}
           onChange={(e) => setCode(e.target.value)}
-          style={{ ...inp, fontFamily: "var(--font-geist-mono), monospace", letterSpacing: "0.06em" }}
+          style={{ ...inp, fontFamily: "var(--font-geist-mono), monospace", letterSpacing: "0.06em", textTransform: "uppercase" }}
           onFocus={(e) => { e.target.style.borderColor = "var(--violet-light)"; e.target.style.boxShadow = "0 0 0 3px rgba(108,58,232,0.15)"; }}
           onBlur={(e)  => { e.target.style.borderColor = "rgba(108,58,232,0.25)"; e.target.style.boxShadow = "none"; }}
         />
@@ -318,7 +335,27 @@ function buildSteps(email?: string): Step[] {
       ),
     },
     {
-      id: 2, icon: "🤖",
+      id: 2, icon: "📧",
+      title: "Find Your Access Code",
+      desc: "Check your email inbox",
+      content: (
+        <div>
+          <p style={{ color: "var(--text-secondary)", fontSize: "0.9rem", lineHeight: 1.7, marginBottom: "0.75rem" }}>
+            We sent a unique <strong style={{ color: "var(--text-primary)" }}>KStudy Access Code</strong> to{" "}
+            <strong style={{ color: "var(--cyan)" }}>{email ?? "your email"}</strong> right after payment. Check your inbox (and spam folder).
+          </p>
+          <div style={{ background: "rgba(0,212,255,0.06)", border: "1px solid rgba(0,212,255,0.2)", borderRadius: "0.9rem", padding: "1rem 1.25rem" }}>
+            <div style={{ fontSize: "0.78rem", color: "var(--text-muted)", marginBottom: "0.4rem" }}>It looks like this:</div>
+            <code style={{ fontFamily: "var(--font-geist-mono), monospace", fontSize: "1rem", color: "var(--cyan)", fontWeight: 700, letterSpacing: "0.1em" }}>KSTUDY-A3BX9Z</code>
+          </div>
+          <p style={{ marginTop: "0.75rem", fontSize: "0.8rem", color: "var(--text-muted)" }}>
+            ⚠️ Keep this code private — you'll need it in Step 5 to activate your bot.
+          </p>
+        </div>
+      ),
+    },
+    {
+      id: 3, icon: "🤖",
       title: "Open @BotFather on Telegram",
       desc: "Find the official Telegram bot creator",
       content: (
@@ -344,7 +381,7 @@ function buildSteps(email?: string): Step[] {
       ),
     },
     {
-      id: 3, icon: "⚙️",
+      id: 4, icon: "⚙️",
       title: "Create Your Personal Bot",
       desc: "Run /newbot and get your API token",
       content: (
@@ -378,26 +415,26 @@ function buildSteps(email?: string): Step[] {
           ]} />
 
           <div style={{ marginTop: "1rem", background: "rgba(247,201,72,0.08)", border: "1px solid rgba(247,201,72,0.25)", borderRadius: "0.75rem", padding: "0.75rem 1rem", fontSize: "0.82rem", color: "var(--gold)" }}>
-            📋 <strong>Copy your token now</strong> — the long string after the colon is your access code. You'll need it in the next step.
+            📋 <strong>Copy your token now</strong> — the long string after the colon. You'll need it in the next step.
           </div>
         </div>
       ),
     },
     {
-      id: 4, icon: "🔌",
+      id: 5, icon: "🔌",
       title: "Connect Hermes to Your Bot",
-      desc: "Paste your API token & BotFather access code",
+      desc: "Paste your token + access code",
       content: (
         <div>
           <p style={{ color: "var(--text-secondary)", fontSize: "0.9rem", lineHeight: 1.7, marginBottom: "1rem" }}>
-            Paste your <strong style={{ color: "var(--text-primary)" }}>BotFather API token</strong> and your <strong style={{ color: "var(--cyan)" }}>KStudy Access Code</strong> below. We'll wire Hermes AI directly into your personal bot.
+            Paste your <strong style={{ color: "var(--text-primary)" }}>BotFather API token</strong> and your <strong style={{ color: "var(--cyan)" }}>KStudy access code</strong> below. We'll wire Hermes AI directly into your personal bot.
           </p>
           <TokenForm email={email} />
         </div>
       ),
     },
     {
-      id: 5, icon: "🚀",
+      id: 6, icon: "🚀",
       title: "You're All Set!",
       desc: "Start chatting with your AI agent",
       content: (
