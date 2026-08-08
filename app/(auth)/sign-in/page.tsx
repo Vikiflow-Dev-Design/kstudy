@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "@/lib/auth-client";
@@ -30,7 +30,7 @@ const inputStyle: React.CSSProperties = {
   transition: "border-color 0.2s, box-shadow 0.2s",
 };
 
-export default function SignInPage() {
+function SignInForm() {
   const router       = useRouter();
   const searchParams = useSearchParams();
   const redirect     = searchParams.get("redirect") ?? "/setup";
@@ -193,5 +193,17 @@ export default function SignInPage() {
 
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
+  );
+}
+
+export default function SignInPage() {
+  return (
+    <Suspense fallback={
+      <div className="glass glow-violet" style={{ width: "100%", maxWidth: 440, height: 400, display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <span style={{ width: 16, height: 16, border: "2px solid rgba(255,255,255,0.3)", borderTopColor: "#fff", borderRadius: "50%", display: "inline-block", animation: "spin 0.6s linear infinite" }} />
+      </div>
+    }>
+      <SignInForm />
+    </Suspense>
   );
 }

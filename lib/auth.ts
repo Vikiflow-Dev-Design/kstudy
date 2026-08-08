@@ -3,9 +3,9 @@ import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import clientPromise from "@/lib/db";
 
 // Singleton — built once per server process
-let authInstance: ReturnType<typeof betterAuth> | null = null;
+let authInstance: any = null;
 
-export async function getAuth(): Promise<ReturnType<typeof betterAuth>> {
+export async function getAuth(): Promise<any> {
   if (authInstance) return authInstance;
 
   const client = await clientPromise;
@@ -18,12 +18,8 @@ export async function getAuth(): Promise<ReturnType<typeof betterAuth>> {
 
     // ── Database ──────────────────────────────────────────────
     database: mongodbAdapter(db, {
-      collectionNames: {
-        user:         "user",
-        session:      "session",
-        account:      "account",
-        verification: "verification",
-      },
+      client: client,
+      transaction: false,
     }),
 
     // ── Email & Password ──────────────────────────────────────

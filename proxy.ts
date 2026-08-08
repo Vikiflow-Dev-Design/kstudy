@@ -27,7 +27,7 @@ export default async function proxy(request: NextRequest) {
   // Check the Better Auth session cookie via internal API call
   let isLoggedIn = false;
   try {
-    const baseUrl  = process.env.BETTER_AUTH_URL ?? "http://localhost:3000";
+    const baseUrl  = request.nextUrl.origin;
     const response = await fetch(`${baseUrl}/api/auth/get-session`, {
       headers: { cookie: request.headers.get("cookie") ?? "" },
     });
